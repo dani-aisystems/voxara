@@ -1,0 +1,13 @@
+[
+  {"id": "en-redesign", "lang": "en", "voice": "Samantha", "text": "I want to redesign the dashboard, but before changing anything investigate why loading performance has degraded."},
+  {"id": "en-correction", "lang": "en", "voice": "Daniel", "text": "We should launch Friday, actually no, Tuesday. Send the update to Maria and the marketing team."},
+  {"id": "en-numbers", "lang": "en", "voice": "Samantha", "text": "The invoice is 2,450 dollars for 3 months, starting on the 15th of March."},
+  {"id": "en-tech", "lang": "en", "voice": "Reed (English (US))", "text": "Open the Claude Code terminal, run the tests, and check whether the API returns a 404 for the users endpoint."},
+  {"id": "en-long", "lang": "en", "voice": "Samantha", "text": "I need Claude Code to look through this project and see why the dashboard loading is slow. Don't just randomly change stuff. I want it to investigate everything first, then make the fix, make sure nothing breaks, and run the tests. After that, write a short summary of what caused the problem and what was changed, so I can share it with the team on Slack."},
+  {"id": "bg-check", "lang": "bg", "voice": "Daria", "text": "Искам първо да провериш защо страницата зарежда бавно и чак след това да правиш промени."},
+  {"id": "bg-mixed-api", "lang": "bg", "voice": "Daria", "text": "Провери dashboard компонента и виж дали API request-ите се изпълняват прекалено много пъти."},
+  {"id": "bg-numbers", "lang": "bg", "voice": "Daria", "text": "Срещата е в сряда в 14 часа, а бюджетът е 5000 лева."},
+  {"id": "bg-names", "lang": "bg", "voice": "Daria", "text": "Изпрати офертата на Иван Петров от София до края на седмицата."},
+  {"id": "bg-mixed-deploy", "lang": "bg", "voice": "Daria", "text": "След като направиш deploy на новата версия, пусни тестовете и ми прати линк към pull request-а в GitHub."},
+  {"id": "bg-long", "lang": "bg", "voice": "Daria", "text": "Искам да направиш нова оферта за Citizens Club. Първо разгледай как изглежда офертата на Catalea, защото дизайнът там беше много по-добър. Използвай същите принципи, но не копирай информацията за бизнеса, защото е различна."}
+]
