@@ -13,8 +13,13 @@ Last updated: 2026-10-01
   - Bulgarian (Cyrillic) text inserted correctly.
   - `scripts/build-app.sh` builds, signs and installs `~/Applications/VoiceText.app`.
 
+- Dictation refinement: DeterministicCleaner, spoken commands (EN/BG), self-correction detector,
+  OutputGuards, DictationRefiner (Ollama via AIProvider). 51 unit tests pass (`scripts/test.sh`).
+- Ollama installed (brew service); Qwen3-4B-Instruct-2507 Q4 passes 10/10 dictation fixtures
+  (EN + BG + mixed, ~1.2 s avg per LLM pass) via `vt-bench refine`.
+
 ## IN PROGRESS
-- Phase 3: reliable dictation (cleanup, overlay, error handling, model management).
+- Phase 3: wire refiner into the app, overlay, permission/error UX, model management.
 
 ## NEXT
 - DeterministicCleaner + spoken commands (EN/BG), LLM refiner with output guards.
