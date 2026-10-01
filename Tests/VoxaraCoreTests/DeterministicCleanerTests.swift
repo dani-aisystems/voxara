@@ -1,5 +1,5 @@
 import Testing
-@testable import VoiceTextCore
+@testable import VoxaraCore
 
 @Suite struct DeterministicCleanerTests {
     private let cleaner = DeterministicCleaner()

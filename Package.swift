@@ -2,11 +2,11 @@
 import PackageDescription
 
 let package = Package(
-    name: "VoiceText",
+    name: "Voxara",
     platforms: [.macOS(.v15)],
     products: [
-        .executable(name: "VoiceText", targets: ["VoiceTextApp"]),
-        .executable(name: "vt-bench", targets: ["vt-bench"]),
+        .executable(name: "Voxara", targets: ["VoxaraApp"]),
+        .executable(name: "vx-bench", targets: ["vx-bench"]),
     ],
     dependencies: [
         // Apache-2.0. ASR only: opt out of the NeMo text-normalization binary (TTS/ITN).
@@ -14,21 +14,21 @@ let package = Package(
     ],
     targets: [
         .target(
-            name: "VoiceTextCore",
+            name: "VoxaraCore",
             dependencies: [.product(name: "FluidAudio", package: "FluidAudio")],
             resources: [.copy("Resources/PromptProfiles")]
         ),
         .executableTarget(
-            name: "VoiceTextApp",
-            dependencies: ["VoiceTextCore"]
+            name: "VoxaraApp",
+            dependencies: ["VoxaraCore"]
         ),
         .executableTarget(
-            name: "vt-bench",
-            dependencies: ["VoiceTextCore"]
+            name: "vx-bench",
+            dependencies: ["VoxaraCore"]
         ),
         .testTarget(
-            name: "VoiceTextCoreTests",
-            dependencies: ["VoiceTextCore"],
+            name: "VoxaraCoreTests",
+            dependencies: ["VoxaraCore"],
             resources: [.copy("Fixtures")]
         ),
     ]

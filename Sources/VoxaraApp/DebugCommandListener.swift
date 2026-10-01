@@ -1,5 +1,5 @@
 import AppKit
-import VoiceTextCore
+import VoxaraCore
 
 /// Development-only hook for end-to-end tests without speaking. Enabled with
 /// `defaults write com.daniel.voicetext EnableDebugCommands -bool true`.

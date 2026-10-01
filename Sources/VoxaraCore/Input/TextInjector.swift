@@ -26,7 +26,7 @@ public enum InsertionOutcome: Sendable, Equatable {
 /// Delivers text into the app the user was typing in.
 @MainActor
 public final class TextInjector {
-    private let log = Logger(subsystem: "com.daniel.voicetext", category: "insertion")
+    private let log = VoxaraLog.logger("insertion")
     public var method: InsertionMethod = .paste
     /// Base delay before restoring the clipboard; browsers/Electron get extra time.
     public var restoreDelay: TimeInterval = 0.35
@@ -98,7 +98,7 @@ public final class TextInjector {
             guard let event else { continue }
             // Electron/Chromium need the ⌘ flag on the ⌘-down event itself; clear it on release.
             event.flags = index < 3 ? .maskCommand : []
-            event.setIntegerValueField(.eventSourceUserData, value: voiceTextSyntheticEventTag)
+            event.setIntegerValueField(.eventSourceUserData, value: voxaraSyntheticEventTag)
             event.post(tap: .cghidEventTap)
         }
     }

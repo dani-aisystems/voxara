@@ -1,14 +1,14 @@
 import Foundation
-import VoiceTextCore
+import VoxaraCore
 
-// vt-bench: development benchmarks.
-//   vt-bench stt <v3|ultra> <file.wav>...         transcribe files with Parakeet
-//   vt-bench refine <ollama-model> [fixtures.json] run dictation fixtures through the refiner
+// vx-bench: development benchmarks.
+//   vx-bench stt <v3|ultra> <file.wav>...         transcribe files with Parakeet
+//   vx-bench refine <ollama-model> [fixtures.json] run dictation fixtures through the refiner
 
 let args = Array(CommandLine.arguments.dropFirst())
 
 func usage() -> Never {
-    print("usage: vt-bench stt <v3|ultra> <file.wav>...\n       vt-bench refine <ollama-model> [fixtures.json]")
+    print("usage: vx-bench stt <v3|ultra> <file.wav>...\n       vx-bench refine <ollama-model> [fixtures.json]")
     exit(2)
 }
 
@@ -33,7 +33,7 @@ case "stt":
 case "refine":
     guard args.count >= 2 else { usage() }
     let provider = OllamaProvider(model: args[1])
-    let path = args.count > 2 ? args[2] : "Tests/VoiceTextCoreTests/Fixtures/dictation/dictation.json"
+    let path = args.count > 2 ? args[2] : "Tests/VoxaraCoreTests/Fixtures/dictation/dictation.json"
     let fixtures = try DictationFixture.load(from: URL(fileURLWithPath: path))
     guard await provider.isAvailable() else {
         print("Model \(args[1]) is not available in Ollama (is it pulled and is the service running?)")

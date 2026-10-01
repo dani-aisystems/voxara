@@ -1,5 +1,5 @@
 import AppKit
-import VoiceTextCore
+import VoxaraCore
 
 @MainActor
 final class StatusMenuController: NSObject {
@@ -29,7 +29,7 @@ final class StatusMenuController: NSObject {
         menu.addItem(.separator())
         menu.addItem(copyLastItem)
         menu.addItem(.separator())
-        let quit = NSMenuItem(title: "Quit VoiceText", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q")
+        let quit = NSMenuItem(title: "Quit Voxara", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q")
         menu.addItem(quit)
         item.menu = menu
     }
@@ -69,7 +69,7 @@ final class StatusMenuController: NSObject {
     }
 
     private func setIcon(_ symbol: String) {
-        item.button?.image = NSImage(systemSymbolName: symbol, accessibilityDescription: "VoiceText")
+        item.button?.image = NSImage(systemSymbolName: symbol, accessibilityDescription: "Voxara")
     }
 
     @objc private func copyLast() {

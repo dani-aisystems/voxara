@@ -45,7 +45,7 @@ public struct DictationRecord: Codable, Sendable, Identifiable, Equatable {
 /// Orchestrates hotkey → record → transcribe → process → insert.
 @MainActor
 public final class DictationPipeline {
-    private let log = Logger(subsystem: "com.daniel.voicetext", category: "pipeline")
+    private let log = VoxaraLog.logger("pipeline")
     private let recorder: AudioRecorder
     private let transcriber: any SpeechTranscriber
     private let injector: TextInjector

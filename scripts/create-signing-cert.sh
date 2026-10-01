@@ -1,6 +1,6 @@
 #!/bin/zsh
 # Creates a self-signed code-signing identity in the login keychain so that macOS
-# privacy grants (Microphone, Accessibility) survive rebuilds of VoiceText.
+# privacy grants (Microphone, Accessibility) survive rebuilds of Voxara.
 # Safe to re-run: exits early if the identity already exists.
 # Remove later with: security delete-identity -c "VoiceText Local Signing"
 set -euo pipefail

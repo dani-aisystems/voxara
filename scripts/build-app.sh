@@ -1,5 +1,5 @@
 #!/bin/zsh
-# Builds VoiceText.app, signs it with the local identity and installs it to ~/Applications.
+# Builds Voxara.app, signs it with the local identity and installs it to ~/Applications.
 # Usage: scripts/build-app.sh [--no-install] [--debug]
 set -euo pipefail
 cd "$(dirname "$0")/.."
@@ -13,7 +13,7 @@ for arg in "$@"; do
   esac
 done
 
-APP_NAME=VoiceText
+APP_NAME=Voxara
 BUNDLE_ID=com.daniel.voicetext
 IDENTITY="VoiceText Local Signing"
 VERSION=0.1.0
@@ -50,7 +50,7 @@ cat > "$APP/Contents/Info.plist" <<PLIST
   <key>NSHighResolutionCapable</key><true/>
   <key>NSSupportsAutomaticTermination</key><false/>
   <key>NSSupportsSuddenTermination</key><false/>
-  <key>NSMicrophoneUsageDescription</key><string>VoiceText records your voice while you hold the dictation shortcut and transcribes it on this Mac.</string>
+  <key>NSMicrophoneUsageDescription</key><string>Voxara records your voice while you hold the dictation shortcut and transcribes it on this Mac.</string>
 </dict>
 </plist>
 PLIST
@@ -79,6 +79,12 @@ echo "Built $APP ($CONFIG, build $BUILD_NUMBER)"
 if [[ $INSTALL == 1 ]]; then
   DEST="$HOME/Applications/$APP_NAME.app"
   pkill -x "$APP_NAME" 2>/dev/null && sleep 0.5 || true
+  # Retire the pre-rename build so two copies never listen for the same hotkeys.
+  if [[ -d "$HOME/Applications/VoiceText.app" ]]; then
+    pkill -x VoiceText 2>/dev/null && sleep 0.5 || true
+    rm -rf "$HOME/Applications/VoiceText.app"
+    echo "Removed legacy ~/Applications/VoiceText.app"
+  fi
   mkdir -p "$HOME/Applications"
   rm -rf "$DEST"
   cp -R "$APP" "$DEST"

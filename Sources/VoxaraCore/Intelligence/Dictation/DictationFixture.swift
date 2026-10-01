@@ -1,6 +1,6 @@
 import Foundation
 
-/// A test case for dictation refinement, shared by unit tests and `vt-bench refine`.
+/// A test case for dictation refinement, shared by unit tests and `vx-bench refine`.
 public struct DictationFixture: Codable, Sendable {
     public var id: String
     public var input: String

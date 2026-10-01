@@ -1,6 +1,6 @@
 import Foundation
 import Testing
-@testable import VoiceTextCore
+@testable import VoxaraCore
 
 /// Scripted provider for deterministic tests.
 struct MockProvider: AIProvider {

@@ -1,6 +1,6 @@
 import Foundation
 import Testing
-@testable import VoiceTextCore
+@testable import VoxaraCore
 
 @Suite struct HotkeyStateMachineTests {
     private let rightOption = ModifierKey.rightOption

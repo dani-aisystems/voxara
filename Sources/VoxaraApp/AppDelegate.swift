@@ -1,10 +1,10 @@
 import AppKit
 import os
-import VoiceTextCore
+import VoxaraCore
 
 @MainActor
 final class AppDelegate: NSObject, NSApplicationDelegate {
-    private let log = Logger(subsystem: "com.daniel.voicetext", category: "app")
+    private let log = VoxaraLog.logger("app")
     private var pipeline: DictationPipeline!
     private var hotkeys: EventTapService!
     private var statusMenu: StatusMenuController!

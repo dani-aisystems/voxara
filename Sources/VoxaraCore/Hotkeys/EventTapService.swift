@@ -3,15 +3,15 @@ import CoreGraphics
 import Foundation
 import os
 
-/// Marker stamped on events VoiceText posts itself (e.g. the ⌘V paste) so the tap ignores them.
-public let voiceTextSyntheticEventTag: Int64 = 0x5654_5854 // "VTXT"
+/// Marker stamped on events Voxara posts itself (e.g. the ⌘V paste) so the tap ignores them.
+public let voxaraSyntheticEventTag: Int64 = 0x5654_5854 // "VTXT"
 
 /// Global keyboard listener built on a CGEventTap running on its own high-priority thread,
 /// so hotkey handling never waits on the main thread (which may be busy pasting or drawing).
 public final class EventTapService: @unchecked Sendable {
     public typealias SignalHandler = @Sendable (HotkeySignal) -> Void
 
-    private let log = Logger(subsystem: "com.daniel.voicetext", category: "hotkeys")
+    private let log = VoxaraLog.logger("hotkeys")
     private let lock = NSLock()
     private var machine: HotkeyStateMachine
     private var tap: CFMachPort?
@@ -77,7 +77,7 @@ public final class EventTapService: @unchecked Sendable {
             ready.signal()
             CFRunLoopRun()
         }
-        thread.name = "VoiceText.EventTap"
+        thread.name = "Voxara.EventTap"
         thread.qualityOfService = .userInteractive
         lock.withLock {
             self.tap = port
@@ -119,7 +119,7 @@ public final class EventTapService: @unchecked Sendable {
         default:
             return Unmanaged.passUnretained(event)
         }
-        if event.getIntegerValueField(.eventSourceUserData) == voiceTextSyntheticEventTag {
+        if event.getIntegerValueField(.eventSourceUserData) == voxaraSyntheticEventTag {
             return Unmanaged.passUnretained(event)
         }
 

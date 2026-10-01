@@ -9,7 +9,7 @@ public enum AudioRecorderError: LocalizedError, Equatable {
 
     public var errorDescription: String? {
         switch self {
-        case .permissionDenied: "Microphone access is not allowed. Enable VoiceText in System Settings → Privacy & Security → Microphone."
+        case .permissionDenied: "Microphone access is not allowed. Enable Voxara in System Settings → Privacy & Security → Microphone."
         case .noInputDevice: "No microphone was found."
         case .engineFailed(let message): "Could not start the microphone: \(message)"
         }
@@ -20,7 +20,7 @@ public enum AudioRecorderError: LocalizedError, Equatable {
 public final class AudioRecorder: @unchecked Sendable {
     public typealias LevelHandler = @Sendable (Float) -> Void
 
-    private let log = Logger(subsystem: "com.daniel.voicetext", category: "audio")
+    private let log = VoxaraLog.logger("audio")
     private let engine = AVAudioEngine()
     private let lock = NSLock()
     private var samples: [Float] = []

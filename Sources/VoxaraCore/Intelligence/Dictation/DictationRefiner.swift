@@ -19,7 +19,7 @@ public enum SmartCleanupMode: String, Codable, CaseIterable, Sendable {
 /// Dictation processing: deterministic cleanup first, an optional local-LLM pass only when the
 /// transcript actually needs it, and strict guards so the model can never change the meaning.
 public struct DictationRefiner: TextProcessor {
-    private let log = Logger(subsystem: "com.daniel.voicetext", category: "refiner")
+    private let log = VoxaraLog.logger("refiner")
     public var cleaner: DeterministicCleaner
     public var provider: (any AIProvider)?
     public var mode: SmartCleanupMode
