@@ -1,6 +1,6 @@
 # Logo generation prompt
 
-Daniel is supplying the final logo image directly (see `Brand/logo/`), so no generation prompt is stored here yet.
+Daniel supplied the final logo as an image (`Brand/reference/voxara-brand-sheet.png`), so no generation prompt was used. The direction below is kept for future revisions.
 
 Design direction for reference (from the Voxara brief):
 - Combine human voice, text, AI/system thinking, speed and precision.
