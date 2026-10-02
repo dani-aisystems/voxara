@@ -23,7 +23,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
         if UserDefaults.standard.bool(forKey: "EnableDebugCommands") {
             debugListener = DebugCommandListener(model: model)
         }
-        if !model.settings.onboardingCompleted { showOnboarding() }
+        // `SkipOnboarding` is a development switch so automated test relaunches do not open the guide each time.
+        if !model.settings.onboardingCompleted, !UserDefaults.standard.bool(forKey: "SkipOnboarding") { showOnboarding() }
         log.info("Voxara launched")
     }
 

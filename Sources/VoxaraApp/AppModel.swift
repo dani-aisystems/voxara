@@ -255,6 +255,26 @@ final class AppModel {
         }
         overlay?.update(state: state)
         playSound(for: state)
+        scheduleStatusReset(for: state)
+    }
+
+    private var statusResetTask: Task<Void, Never>?
+
+    /// Results and errors are transient: the menu and sidebar return to "Ready" a few seconds later.
+    private func scheduleStatusReset(for state: PipelineState) {
+        statusResetTask?.cancel()
+        let delay: Double
+        switch state {
+        case .done: delay = 3
+        case .failed: delay = 12
+        default: return
+        }
+        statusResetTask = Task { [weak self] in
+            try? await Task.sleep(for: .seconds(delay))
+            guard !Task.isCancelled, let self else { return }
+            if case .done = pipelineState { pipelineState = .idle }
+            if case .failed = pipelineState { pipelineState = .idle }
+        }
     }
 
     private func push(level: Float) {
