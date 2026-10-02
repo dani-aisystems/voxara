@@ -70,3 +70,7 @@ Safe end-to-end insertion testing is described in `docs/testing.md`. **Never** t
 Layout: `Sources/VoxaraCore` (audio, speech, hotkeys, insertion, dictation, prompt compiler, storage; no UI), `Sources/VoxaraApp` (menu bar, overlay, Command Center, onboarding), `Sources/vx-bench`, `Tests/VoxaraCoreTests`, `Sources/VoxaraCore/Resources/PromptProfiles`, `scripts`, `docs`, `Brand`.
 
 Toolchain note: with Command Line Tools only, SwiftUI's `@State` macro plugin is unavailable, so views use the `LocalState` typealias; and `swift test` needs the Swift Testing plugin path, which `scripts/test.sh` supplies.
+
+## License
+
+MIT, see [LICENSE](LICENSE). Third-party components and models are listed in [THIRD_PARTY.md](THIRD_PARTY.md).
