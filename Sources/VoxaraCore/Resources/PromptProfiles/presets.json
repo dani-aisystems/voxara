@@ -1,0 +1,53 @@
+{
+  "version": 1,
+  "presets": {
+    "quick": {
+      "sections": [
+        "references",
+        "research",
+        "workflow",
+        "requirements",
+        "constraints",
+        "exclusions",
+        "validation"
+      ],
+      "signals": false,
+      "compact": true
+    },
+    "structured": {
+      "sections": [
+        "context",
+        "references",
+        "inputs",
+        "research",
+        "workflow",
+        "requirements",
+        "constraints",
+        "exclusions",
+        "deliverable",
+        "validation",
+        "done"
+      ],
+      "signals": true,
+      "compact": false
+    },
+    "deep": {
+      "sections": [
+        "context",
+        "references",
+        "inputs",
+        "research",
+        "workflow",
+        "requirements",
+        "constraints",
+        "exclusions",
+        "deliverable",
+        "validation",
+        "done"
+      ],
+      "signals": true,
+      "compact": false,
+      "numberWorkflow": true
+    }
+  }
+}

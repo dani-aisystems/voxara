@@ -1,0 +1,562 @@
+[
+  {
+    "id": "coding-mobile-hero",
+    "category": "coding",
+    "profile": "claude-code",
+    "input": "So I basically want Claude Code to inspect my website because on mobile I think the hero isn't quite right, and don't immediately change stuff, check how the section is currently built first, and I don't want the desktop changed because I like it, but on mobile the CTA should probably be more visible, and make sure after you fix it nothing else got messed up.",
+    "mustPreserve": [
+      [
+        "website"
+      ],
+      [
+        "mobile"
+      ],
+      [
+        "hero"
+      ],
+      [
+        "CTA"
+      ],
+      [
+        "desktop"
+      ],
+      [
+        "currently built",
+        "how it is built",
+        "how it's built",
+        "current implementation",
+        "how the section works",
+        "before changing",
+        "before making changes",
+        "before modifying"
+      ],
+      [
+        "more visible",
+        "visibility",
+        "stand out",
+        "prominent"
+      ],
+      [
+        "nothing else",
+        "affected",
+        "regress",
+        "break",
+        "messed up"
+      ]
+    ],
+    "mustNotInvent": [
+      "React",
+      "Next.js",
+      "Tailwind",
+      "Bootstrap",
+      "WordPress",
+      "px",
+      "pixel",
+      "breakpoint",
+      "blue",
+      "red",
+      "green",
+      "orange",
+      "iPhone",
+      "Safari",
+      "Chrome",
+      "button color",
+      "A/B"
+    ],
+    "expectedSections": [
+      "Validation"
+    ]
+  },
+  {
+    "id": "debugging-dashboard",
+    "category": "coding",
+    "profile": "claude-code",
+    "input": "I need Claude Code to look through this project and basically see why the dashboard loading is slow and don't just randomly change stuff, I want it to investigate everything first and then make the fix and make sure nothing breaks and run the tests.",
+    "mustPreserve": [
+      [
+        "dashboard"
+      ],
+      [
+        "slow"
+      ],
+      [
+        "investigate",
+        "inspect",
+        "diagnose",
+        "root cause"
+      ],
+      [
+        "fix"
+      ],
+      [
+        "tests",
+        "test"
+      ],
+      [
+        "nothing break",
+        "nothing else",
+        "not break",
+        "regress",
+        "affected"
+      ]
+    ],
+    "mustNotInvent": [
+      "database",
+      "SQL",
+      "cache",
+      "Redis",
+      "webpack",
+      "bundle size",
+      "lazy load",
+      "N+1",
+      "React",
+      "Lighthouse"
+    ],
+    "expectedSections": [
+      "Validation"
+    ]
+  },
+  {
+    "id": "business-citizens-catalea",
+    "category": "business",
+    "profile": "claude",
+    "input": "Okay so basically what I need you to do is look at my current offer deck and I don't really like how Citizens Club looks compared to Catalea, Catalea was a lot better so first understand what made that design better and then make the new deck follow those principles but obviously don't copy the business info because it's different and research Citizens Club.",
+    "mustPreserve": [
+      [
+        "offer deck",
+        "deck"
+      ],
+      [
+        "Citizens Club"
+      ],
+      [
+        "Catalea"
+      ],
+      [
+        "principles",
+        "design principles"
+      ],
+      [
+        "research"
+      ],
+      [
+        "don't copy",
+        "do not copy",
+        "not copy",
+        "without copying",
+        "not reuse",
+        "different"
+      ]
+    ],
+    "mustNotInvent": [
+      "PowerPoint",
+      "Keynote",
+      "Canva",
+      "slide count",
+      "pricing",
+      "logo",
+      "brand colors",
+      "audience"
+    ],
+    "expectedSections": []
+  },
+  {
+    "id": "research-comparison",
+    "category": "research",
+    "profile": "chatgpt",
+    "input": "I want you to research the best local speech to text options for Mac, compare accuracy and speed, look at both English and Bulgarian support, and tell me which one I should use, with sources.",
+    "mustPreserve": [
+      [
+        "speech to text",
+        "speech-to-text",
+        "transcription"
+      ],
+      [
+        "Mac",
+        "macOS"
+      ],
+      [
+        "accuracy"
+      ],
+      [
+        "speed",
+        "latency"
+      ],
+      [
+        "English"
+      ],
+      [
+        "Bulgarian"
+      ],
+      [
+        "sources"
+      ],
+      [
+        "which one",
+        "recommend",
+        "should use",
+        "recommendation"
+      ]
+    ],
+    "mustNotInvent": [
+      "Whisper",
+      "Parakeet",
+      "Apple Silicon",
+      "M3",
+      "benchmark",
+      "WER",
+      "2024",
+      "2025"
+    ],
+    "expectedSections": []
+  },
+  {
+    "id": "sales-followup",
+    "category": "sales",
+    "profile": "generic",
+    "input": "Write a follow up message to the restaurant owner we met yesterday, keep it friendly and short, mention that I can build them a new website and that I'll send a proposal by Friday.",
+    "mustPreserve": [
+      [
+        "follow up",
+        "follow-up"
+      ],
+      [
+        "restaurant owner",
+        "owner"
+      ],
+      [
+        "friendly"
+      ],
+      [
+        "short"
+      ],
+      [
+        "website"
+      ],
+      [
+        "proposal"
+      ],
+      [
+        "Friday"
+      ]
+    ],
+    "mustNotInvent": [
+      "discount",
+      "price",
+      "$",
+      "€",
+      "percent",
+      "%",
+      "Monday",
+      "call",
+      "meeting room"
+    ],
+    "expectedSections": []
+  },
+  {
+    "id": "writing-rewrite",
+    "category": "writing",
+    "profile": "claude",
+    "input": "Can you rewrite my LinkedIn about section so it sounds less corporate and more like I actually talk, I build AI systems for small businesses in Bulgaria, and keep it under a hundred words.",
+    "mustPreserve": [
+      [
+        "LinkedIn"
+      ],
+      [
+        "less corporate",
+        "not corporate",
+        "conversational",
+        "natural",
+        "like I talk",
+        "like I actually talk"
+      ],
+      [
+        "AI systems"
+      ],
+      [
+        "small businesses"
+      ],
+      [
+        "Bulgaria"
+      ],
+      [
+        "under a hundred words",
+        "under 100 words",
+        "100 words",
+        "hundred words"
+      ]
+    ],
+    "mustNotInvent": [
+      "years of experience",
+      "founder",
+      "CEO",
+      "award",
+      "certified",
+      "emoji",
+      "hashtag"
+    ],
+    "expectedSections": []
+  },
+  {
+    "id": "planning-launch",
+    "category": "planning",
+    "profile": "generic",
+    "input": "Help me plan the launch of the new offer next month, I need a simple week by week plan, I'm working alone so nothing too complicated, and focus on getting the first three clients.",
+    "mustPreserve": [
+      [
+        "launch"
+      ],
+      [
+        "next month"
+      ],
+      [
+        "week by week",
+        "week-by-week",
+        "weekly"
+      ],
+      [
+        "alone",
+        "solo",
+        "by myself"
+      ],
+      [
+        "simple",
+        "not too complicated",
+        "nothing too complicated"
+      ],
+      [
+        "first three clients",
+        "first 3 clients",
+        "three clients",
+        "3 clients"
+      ]
+    ],
+    "mustNotInvent": [
+      "budget",
+      "ads",
+      "Facebook",
+      "Instagram",
+      "email list",
+      "webinar",
+      "team of"
+    ],
+    "expectedSections": []
+  },
+  {
+    "id": "bulgarian-slow-page",
+    "category": "bulgarian",
+    "profile": "claude-code",
+    "input": "Искам първо да провериш защо страницата зарежда бавно и чак след това да правиш промени, и да не пипаш дизайна.",
+    "mustPreserve": [
+      [
+        "страницата",
+        "страница"
+      ],
+      [
+        "бавно"
+      ],
+      [
+        "първо",
+        "преди"
+      ],
+      [
+        "промени",
+        "промяна",
+        "променяш"
+      ],
+      [
+        "дизайн",
+        "дизайна"
+      ]
+    ],
+    "mustNotInvent": [
+      "React",
+      "Next.js",
+      "база данни",
+      "кеш",
+      "секунди",
+      "Lighthouse"
+    ],
+    "expectedSections": []
+  },
+  {
+    "id": "mixed-api-requests",
+    "category": "mixed",
+    "profile": "claude-code",
+    "input": "Провери dashboard компонента и виж дали API request-ите се изпълняват прекалено много пъти, и ако е така оправи го, но не пипай backend-а.",
+    "mustPreserve": [
+      [
+        "dashboard"
+      ],
+      [
+        "API"
+      ],
+      [
+        "request"
+      ],
+      [
+        "прекалено много",
+        "твърде много",
+        "много пъти"
+      ],
+      [
+        "backend"
+      ],
+      [
+        "не пипай",
+        "не променяй",
+        "без промени"
+      ]
+    ],
+    "mustNotInvent": [
+      "React",
+      "useEffect",
+      "Redux",
+      "cache",
+      "кеш",
+      "GraphQL",
+      "REST"
+    ],
+    "expectedSections": []
+  },
+  {
+    "id": "mixed-deploy",
+    "category": "mixed",
+    "profile": "claude-code",
+    "input": "След като направиш deploy на новата версия във Vercel, пусни тестовете и ми прати линк към pull request-а в GitHub.",
+    "mustPreserve": [
+      [
+        "deploy"
+      ],
+      [
+        "Vercel"
+      ],
+      [
+        "тестовете",
+        "тестове"
+      ],
+      [
+        "pull request"
+      ],
+      [
+        "GitHub"
+      ],
+      [
+        "линк",
+        "link"
+      ]
+    ],
+    "mustNotInvent": [
+      "staging",
+      "production",
+      "main branch",
+      "CI",
+      "Docker"
+    ],
+    "expectedSections": []
+  },
+  {
+    "id": "short-instruction",
+    "category": "short",
+    "profile": "generic",
+    "input": "Summarize this article in three bullet points.",
+    "mustPreserve": [
+      [
+        "summarize",
+        "summary"
+      ],
+      [
+        "article"
+      ],
+      [
+        "three bullet points",
+        "3 bullet points",
+        "three bullets"
+      ]
+    ],
+    "mustNotInvent": [
+      "executive",
+      "audience",
+      "tone",
+      "words",
+      "300",
+      "headline"
+    ],
+    "expectedSections": []
+  },
+  {
+    "id": "long-rambling",
+    "category": "long",
+    "profile": "claude-code",
+    "input": "Okay so this is a bit of a long one. We have this app, it's a booking system for barbers, and the thing I'm worried about is that customers sometimes book the same slot twice. I think it's a race condition but I'm honestly not sure, so don't assume. I'd like Claude Code to first read how booking is currently handled, find out how the double booking can happen, and tell me what it found before it changes anything. After I say it's fine, then fix it in the smallest way that makes sense. The cancellation flow works fine so please leave that alone. And when you're done, run whatever tests exist and tell me if anything fails.",
+    "mustPreserve": [
+      [
+        "booking system",
+        "booking app",
+        "booking"
+      ],
+      [
+        "barbers"
+      ],
+      [
+        "same slot twice",
+        "double book",
+        "double booking",
+        "twice"
+      ],
+      [
+        "race condition"
+      ],
+      [
+        "don't assume",
+        "do not assume",
+        "not sure",
+        "not certain",
+        "unsure",
+        "without assuming",
+        "rather than assuming",
+        "without assuming",
+        "not assume",
+        "assuming"
+      ],
+      [
+        "before it changes anything",
+        "before changing",
+        "before making changes",
+        "before any change",
+        "report",
+        "tell me what it found",
+        "before making any changes",
+        "before making any change",
+        "before any changes",
+        "tell the user what was found",
+        "before changing anything"
+      ],
+      [
+        "smallest"
+      ],
+      [
+        "cancellation"
+      ],
+      [
+        "tests"
+      ]
+    ],
+    "mustNotInvent": [
+      "Postgres",
+      "MySQL",
+      "Redis",
+      "mutex",
+      "lock",
+      "transaction",
+      "Node",
+      "Django",
+      "Rails",
+      "React",
+      "unique constraint"
+    ],
+    "expectedSections": [
+      "Validation"
+    ]
+  }
+]

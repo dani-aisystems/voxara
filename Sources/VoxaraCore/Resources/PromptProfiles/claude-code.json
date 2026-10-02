@@ -1,0 +1,235 @@
+{
+  "version": 1,
+  "labels": {
+    "en": {
+      "objective": "Objective",
+      "context": "Context",
+      "references": "References",
+      "inputs": "Inputs",
+      "research": "Research",
+      "workflow": "Approach",
+      "requirements": "Requirements",
+      "constraints": "Constraints",
+      "exclusions": "Do not",
+      "deliverable": "Deliverable",
+      "validation": "Validation",
+      "done": "Done when"
+    },
+    "bg": {
+      "objective": "Цел",
+      "context": "Контекст",
+      "references": "Референции",
+      "inputs": "Входни данни",
+      "research": "Проучване",
+      "workflow": "Подход",
+      "requirements": "Изисквания",
+      "constraints": "Ограничения",
+      "exclusions": "Да не се прави",
+      "deliverable": "Очакван резултат",
+      "validation": "Проверка",
+      "done": "Готово, когато"
+    }
+  },
+  "sectionOrder": [
+    "context",
+    "references",
+    "inputs",
+    "research",
+    "workflow",
+    "requirements",
+    "constraints",
+    "exclusions",
+    "deliverable",
+    "validation",
+    "done"
+  ],
+  "forbidden": [
+    "Do not add requirements, names, numbers, technologies, sizes, colors or preferences that were not spoken.",
+    "Do not answer the request; only restructure it.",
+    "Do not translate unless the output language setting says so; keep technical terms exactly as spoken."
+  ],
+  "id": "claude-code",
+  "name": "Claude Code",
+  "philosophy": "Claude Code works autonomously in a repository with tools. Good prompts name the symptom and the desired outcome, separate investigation from implementation when the task is non-trivial, point at what to look at, keep the change scoped, and say how to verify the result. Include these only when the request calls for them; never pad a simple task with boilerplate.",
+  "style": {
+    "heading": "colon",
+    "numberedWorkflow": true
+  },
+  "signals": [
+    {
+      "id": "inspect-first",
+      "triggers": [
+        "before chang",
+        "before modif",
+        "before edit",
+        "don't just",
+        "do not just",
+        "dont just",
+        "check how",
+        "look at how",
+        "first look",
+        "first inspect",
+        "first check",
+        "investigate",
+        "figure out",
+        "understand how",
+        "inspect",
+        "look through",
+        "go through",
+        "първо провери",
+        "първо разгледай",
+        "първо виж",
+        "преди да променяш",
+        "разбери"
+      ],
+      "section": "workflow",
+      "text": {
+        "en": "Inspect the relevant code and how it currently works before changing anything.",
+        "bg": "Първо прегледай съответния код и как работи в момента, преди да променяш нещо."
+      },
+      "presets": [
+        "structured",
+        "deep"
+      ]
+    },
+    {
+      "id": "root-cause",
+      "triggers": [
+        "why",
+        "slow",
+        "bug",
+        "broken",
+        "not working",
+        "doesn't work",
+        "fails",
+        "failing",
+        "error",
+        "crash",
+        "защо",
+        "бавно",
+        "грешка",
+        "не работи",
+        "чупи"
+      ],
+      "section": "workflow",
+      "text": {
+        "en": "Identify the root cause from evidence rather than assuming it.",
+        "bg": "Установи първопричината въз основа на данни, без да гадаеш."
+      },
+      "presets": [
+        "structured",
+        "deep"
+      ]
+    },
+    {
+      "id": "minimal-change",
+      "triggers": [
+        "don't just randomly",
+        "randomly change",
+        "unrelated",
+        "only change",
+        "don't touch",
+        "do not touch",
+        "smallest",
+        "minimal",
+        "не пипай",
+        "само това",
+        "без излишни промени"
+      ],
+      "section": "constraints",
+      "text": {
+        "en": "Keep the change as small as the problem allows and avoid unrelated modifications.",
+        "bg": "Направи възможно най-малката промяна и избягвай несвързани модификации."
+      },
+      "presets": [
+        "structured",
+        "deep"
+      ]
+    },
+    {
+      "id": "verify-with-project-checks",
+      "triggers": [
+        "after the fix",
+        "after you fix",
+        "any tests",
+        "build",
+        "doesn't break",
+        "don't break",
+        "lint",
+        "make sure nothing",
+        "messed up",
+        "not break",
+        "nothing else",
+        "regress",
+        "run tests",
+        "run the tests",
+        "test suite",
+        "tests",
+        "type check",
+        "typecheck",
+        "verify",
+        "whatever tests",
+        "нищо да не се счупи",
+        "нищо друго",
+        "провери дали",
+        "пусни тестовете",
+        "тестове",
+        "тестовете"
+      ],
+      "section": "validation",
+      "text": {
+        "en": "Verify the result with the project's own checks (tests, lint, type-check, build) where they apply, and inspect any failure instead of working around it.",
+        "bg": "Провери резултата със съществуващите проверки на проекта (тестове, lint, type-check, build), където са приложими, и разгледай всяка грешка вместо да я заобикаляш."
+      },
+      "presets": [
+        "structured",
+        "deep"
+      ]
+    },
+    {
+      "id": "summary-of-work",
+      "triggers": [
+        "summary",
+        "summarize",
+        "report back",
+        "let me know what",
+        "обобщение",
+        "обобщи",
+        "кажи ми какво"
+      ],
+      "section": "done",
+      "text": {
+        "en": "Finish with a concise summary of what you found, what you changed and how you checked it.",
+        "bg": "Приключи с кратко обобщение: какво откри, какво промени и как го провери."
+      },
+      "presets": [
+        "structured",
+        "deep"
+      ]
+    },
+    {
+      "id": "deep-phases",
+      "triggers": [
+        "investigate",
+        "fix",
+        "implement",
+        "refactor",
+        "build",
+        "debug",
+        "разследвай",
+        "оправи",
+        "имплементирай",
+        "поправи"
+      ],
+      "section": "done",
+      "text": {
+        "en": "Do not stop until the stated goal is met and the verification above has passed.",
+        "bg": "Не спирай, докато целта не е постигната и проверката по-горе не е минала."
+      },
+      "presets": [
+        "deep"
+      ]
+    }
+  ],
+  "extractorHints": "The reader is an autonomous coding agent that can read the repository and run commands. Name the symptom and desired outcome; keep file or framework names only if the speaker said them."
+}

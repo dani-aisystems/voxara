@@ -4,11 +4,12 @@ import VoxaraCore
 // vx-bench: development benchmarks.
 //   vx-bench stt <v3|ultra> <file.wav>...         transcribe files with Parakeet
 //   vx-bench refine <ollama-model> [fixtures.json] run dictation fixtures through the refiner
+//   vx-bench prompt <ollama-model> [preset] [profile-override]  run Prompt Mode fixtures
 
 let args = Array(CommandLine.arguments.dropFirst())
 
 func usage() -> Never {
-    print("usage: vx-bench stt <v3|ultra> <file.wav>...\n       vx-bench refine <ollama-model> [fixtures.json]")
+    print("usage: vx-bench stt <v3|ultra> <file.wav>...\n       vx-bench refine <ollama-model> [fixtures.json]\n       vx-bench prompt <ollama-model> [quick|structured|deep] [profile]")
     exit(2)
 }
 
@@ -40,8 +41,8 @@ case "refine":
         exit(1)
     }
     await provider.warmUp()
-    let refiner = DictationRefiner(provider: provider, mode: .always, timeout: 20)
-    let context = ProcessingContext(mode: .dictation, language: .auto)
+    let refiner = DictationRefiner(provider: provider, timeout: 20)
+    let context = ProcessingContext(mode: .dictation, language: .auto, cleanup: .thorough)
     var passed = 0
     var total: TimeInterval = 0
     for fixture in fixtures {
@@ -58,6 +59,47 @@ case "refine":
         if !eval.forbidden.isEmpty { print("   forbidden: \(eval.forbidden)") }
     }
     print("\n\(passed)/\(fixtures.count) passed, avg \(String(format: "%.2fs", total / Double(fixtures.count))) per item, model \(args[1])")
+
+case "prompt":
+    let positional = args.filter { !$0.hasPrefix("--") }
+    guard positional.count >= 2 else { usage() }
+    let provider = OllamaProvider(model: positional[1])
+    let preset = positional.count > 2 ? (PromptPreset(rawValue: positional[2]) ?? .structured) : .structured
+    let profileOverride = positional.count > 3 ? positional[3] : nil
+    let only = args.first { $0.hasPrefix("--only=") }.map { String($0.dropFirst(7)) }
+    let fixtures = try PromptFixture.load(from: URL(fileURLWithPath: "Tests/VoxaraCoreTests/Fixtures/prompt/prompt-fixtures.json"))
+        .filter { only == nil || $0.id.contains(only!) }
+    guard await provider.isAvailable() else {
+        print("Model \(positional[1]) is not available in Ollama")
+        exit(1)
+    }
+    await provider.warmUp()
+    let compiler = PromptCompiler(provider: provider, profiles: try ProfileStore.load(userDirectory: nil))
+    var passed = 0
+    var total: TimeInterval = 0
+    var modelUsed = 0
+    for fixture in fixtures {
+        let profile = profileOverride ?? fixture.profile
+        let start = Date()
+        let outcome = await compiler.compile(transcript: fixture.input, profileID: profile, preset: preset)
+        let elapsed = Date().timeIntervalSince(start)
+        total += elapsed
+        if outcome.usedModel { modelUsed += 1 }
+        // Quick output has no section labels by design, so section expectations only apply to the other presets.
+        var judged = fixture
+        if preset == .quick { judged.expectedSections = [] }
+        let eval = judged.evaluate(outcome.prompt)
+        if eval.passed { passed += 1 }
+        print("\(eval.passed ? "PASS" : "FAIL") \(fixture.id) [\(profile)/\(preset.rawValue)] \(outcome.usedModel ? "model" : "FALLBACK") \(String(format: "%.1fs", elapsed))")
+        if !eval.passed { print("   \(eval.summary)") }
+        if CommandLine.arguments.contains("--show") || !eval.passed {
+            print(outcome.prompt.split(separator: "\n", omittingEmptySubsequences: false).map { "   │ \($0)" }.joined(separator: "\n"))
+        }
+        if let notice = outcome.notice { print("   notice: \(notice)") }
+        if !outcome.problems.isEmpty { print("   problems: \(outcome.problems)") }
+        if !outcome.dropped.isEmpty { print("   grounding dropped: \(outcome.dropped)") }
+    }
+    print("\n\(passed)/\(fixtures.count) passed, \(modelUsed) via model, avg \(String(format: "%.1fs", total / Double(fixtures.count))), model \(positional[1]), preset \(preset.rawValue)")
 
 default:
     usage()

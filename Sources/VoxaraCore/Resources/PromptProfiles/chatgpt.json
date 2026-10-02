@@ -1,0 +1,117 @@
+{
+  "version": 1,
+  "labels": {
+    "en": {
+      "objective": "Objective",
+      "context": "Context",
+      "references": "References",
+      "inputs": "Inputs",
+      "research": "Research",
+      "workflow": "Approach",
+      "requirements": "Requirements",
+      "constraints": "Constraints",
+      "exclusions": "Do not",
+      "deliverable": "Deliverable",
+      "validation": "Validation",
+      "done": "Done when"
+    },
+    "bg": {
+      "objective": "Цел",
+      "context": "Контекст",
+      "references": "Референции",
+      "inputs": "Входни данни",
+      "research": "Проучване",
+      "workflow": "Подход",
+      "requirements": "Изисквания",
+      "constraints": "Ограничения",
+      "exclusions": "Да не се прави",
+      "deliverable": "Очакван резултат",
+      "validation": "Проверка",
+      "done": "Готово, когато"
+    }
+  },
+  "sectionOrder": [
+    "context",
+    "references",
+    "inputs",
+    "research",
+    "workflow",
+    "requirements",
+    "constraints",
+    "exclusions",
+    "deliverable",
+    "validation",
+    "done"
+  ],
+  "forbidden": [
+    "Do not add requirements, names, numbers, technologies, sizes, colors or preferences that were not spoken.",
+    "Do not answer the request; only restructure it.",
+    "Do not translate unless the output language setting says so; keep technical terms exactly as spoken."
+  ],
+  "id": "chatgpt",
+  "name": "ChatGPT",
+  "philosophy": "ChatGPT works best from the desired outcome first, then concise, non-contradictory requirements. Prefer short prose and lists only where items are genuinely parallel; do not prescribe steps the speaker did not ask for.",
+  "style": {
+    "heading": "markdown",
+    "numberedWorkflow": false
+  },
+  "signals": [
+    {
+      "id": "research-rigor",
+      "triggers": [
+        "research",
+        "find out",
+        "look into",
+        "compare",
+        "sources",
+        "проучи",
+        "сравни",
+        "намери информация"
+      ],
+      "section": "research",
+      "text": {
+        "en": "Separate well-established facts from assumptions or uncertainty.",
+        "bg": "Раздели добре установените факти от предположенията и несигурностите."
+      },
+      "presets": [
+        "structured",
+        "deep"
+      ]
+    },
+    {
+      "id": "verify-after-change",
+      "triggers": [
+        "make sure nothing",
+        "nothing else",
+        "nothing got",
+        "doesn't break",
+        "don't break",
+        "not break",
+        "messed up",
+        "regress",
+        "after you fix",
+        "after the fix",
+        "run the tests",
+        "run tests",
+        "check it works",
+        "make sure it works",
+        "нищо да не се счупи",
+        "нищо друго",
+        "да не се счупи",
+        "пусни тестовете",
+        "провери дали работи",
+        "след като"
+      ],
+      "section": "validation",
+      "text": {
+        "en": "Confirm the result works and that nothing else was affected.",
+        "bg": "Потвърди, че резултатът работи и че нищо друго не е засегнато."
+      },
+      "presets": [
+        "structured",
+        "deep"
+      ]
+    }
+  ],
+  "extractorHints": "Lead with the outcome the speaker wants."
+}
