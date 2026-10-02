@@ -22,6 +22,10 @@ final class DebugCommandListener {
 
     @objc private func received(_ note: Notification) {
         guard let info = note.userInfo, let command = info["command"] as? String else { return }
+        if command == "test-mode" {
+            model.settings.testMode = (info["value"] as? Bool) ?? true
+            return
+        }
         if command == "open-test-bench" {
             TestBenchWindow.shared.show(model: model)
             return
