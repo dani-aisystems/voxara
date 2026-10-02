@@ -9,37 +9,9 @@ public enum PipelineState: Sendable, Equatable {
     case transcribing(HotkeyAction)
     case processing(HotkeyAction, ProcessingStage)
     /// `notice` reports degraded-but-successful processing (e.g. AI unavailable, basic cleanup used).
-    case done(InsertionOutcome, notice: String?)
+    case done(HotkeyAction, InsertionOutcome, notice: String?)
+    /// `recoverableText` is the generated text when it could not be inserted; it is never discarded.
     case failed(message: String, recoverableText: String?)
-}
-
-/// One finished dictation, handed to history and the "last result" menu item.
-public struct DictationRecord: Codable, Sendable, Identifiable, Equatable {
-    public var id = UUID()
-    public var date: Date
-    public var mode: HotkeyAction
-    public var language: SpeechLanguage
-    public var rawTranscript: String
-    public var finalText: String
-    public var targetApp: String?
-    public var targetBundleID: String?
-    public var processor: String
-    public var inserted: Bool
-    public var timings: PipelineTimings
-
-    public init(date: Date, mode: HotkeyAction, language: SpeechLanguage, rawTranscript: String, finalText: String,
-                targetApp: String?, targetBundleID: String?, processor: String, inserted: Bool, timings: PipelineTimings) {
-        self.date = date
-        self.mode = mode
-        self.language = language
-        self.rawTranscript = rawTranscript
-        self.finalText = finalText
-        self.targetApp = targetApp
-        self.targetBundleID = targetBundleID
-        self.processor = processor
-        self.inserted = inserted
-        self.timings = timings
-    }
 }
 
 /// Orchestrates hotkey → record → transcribe → process → insert.
@@ -51,6 +23,12 @@ public final class DictationPipeline {
     private let injector: TextInjector
     public var processor: any TextProcessor
     public var language: SpeechLanguage = .auto
+    public var outputLanguage: PromptOutputLanguage = .sameAsSpeech
+
+    /// Decides profile, preset, cleanup and the effective mode for the focused app.
+    public var contextResolver: ((HotkeyAction, InsertionTarget?) -> ResolvedContext)?
+    /// Returns a reason to *not* insert into this target (e.g. test mode), or nil to allow.
+    public var insertionGuard: ((InsertionTarget?) -> String?)?
 
     public var onStateChange: ((PipelineState) -> Void)?
     public var onLevel: ((Float) -> Void)?
@@ -131,12 +109,20 @@ public final class DictationPipeline {
         run(samples: samples, action: action)
     }
 
-    /// Runs the full pipeline on pre-recorded audio (debug/E2E testing), inserting into the frontmost app.
-    public func runFile(_ url: URL, action: HotkeyAction) {
+    /// Runs the pipeline on pre-recorded audio (testing). Insertion only happens when the frontmost app
+    /// is exactly `expectBundleID`, so a test can never type into whatever the user is working in.
+    public func runFile(_ url: URL, action: HotkeyAction, expectBundleID: String) {
         guard !isBusy else { return }
+        let front = FocusCapture.current()
+        guard front?.bundleID == expectBundleID else {
+            log.warning("Test run refused: frontmost is \(front?.bundleID ?? "nil", privacy: .public), expected \(expectBundleID, privacy: .public)")
+            state = .failed(message: "Test run refused: \(front?.appName ?? "unknown app") is frontmost, expected \(expectBundleID).",
+                            recoverableText: nil)
+            return
+        }
         do {
             let samples = try AudioFileLoader.loadSamples(from: url)
-            target = FocusCapture.current()
+            target = front
             timings = PipelineTimings()
             timings.recordingStarted = Date().addingTimeInterval(-Double(samples.count) / AudioFormat.sampleRate)
             timings.recordingEnded = Date()
@@ -145,6 +131,15 @@ public final class DictationPipeline {
         } catch {
             state = .failed(message: "Could not read audio file: \(error.localizedDescription)", recoverableText: nil)
         }
+    }
+
+    /// Processes typed text through the same mode logic without recording or inserting (Command Center "Try it").
+    public func preview(_ text: String, action: HotkeyAction, context: ResolvedContext) async -> ProcessingResult {
+        let processingContext = ProcessingContext(
+            mode: context.mode, language: language, promptProfile: context.promptProfile,
+            promptPreset: context.promptPreset, cleanup: context.cleanup, outputLanguage: outputLanguage
+        )
+        return await processor.process(text, context: processingContext) { _ in }
     }
 
     /// Stage updates arrive asynchronously; never let a late one overwrite the final state.
@@ -158,47 +153,66 @@ public final class DictationPipeline {
     private func run(samples: [Float], action: HotkeyAction) {
         let language = language
         let target = target
-        work = Task { [weak self] in
-            guard let self else { return }
-            self.state = .transcribing(action)
-            self.timings.sttStarted = Date()
+        let resolved = contextResolver?(action, target)
+            ?? ResolvedContext(mode: action, promptProfile: "generic", promptPreset: .structured, cleanup: .smart, source: "Default")
+        let mode = resolved.mode
+        let context = ProcessingContext(
+            mode: mode, language: language, targetBundleID: target?.bundleID, targetAppName: target?.appName,
+            promptProfile: resolved.promptProfile, promptPreset: resolved.promptPreset, cleanup: resolved.cleanup,
+            outputLanguage: outputLanguage
+        )
+
+        work = Task { [self] in
+            state = .transcribing(mode)
+            timings.sttStarted = Date()
             let raw: String
             do {
-                raw = try await self.transcriber.transcribe(samples: samples, language: language).text
+                raw = try await transcriber.transcribe(samples: samples, language: language).text
             } catch {
-                self.log.error("Transcription failed: \(error.localizedDescription, privacy: .public)")
-                self.state = .failed(message: error.localizedDescription, recoverableText: nil)
+                log.error("Transcription failed: \(error.localizedDescription, privacy: .public)")
+                state = .failed(message: error.localizedDescription, recoverableText: nil)
                 return
             }
-            self.timings.sttCompleted = Date()
+            timings.sttCompleted = Date()
             guard !raw.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
-                self.state = .failed(message: "No speech detected.", recoverableText: nil)
+                state = .failed(message: "No speech detected.", recoverableText: nil)
                 return
             }
 
-            let context = ProcessingContext(mode: action, language: language, targetBundleID: target?.bundleID, targetAppName: target?.appName)
-            self.timings.processingStarted = Date()
-            let result = await self.processor.process(raw, context: context) { stage in
-                Task { @MainActor in self.showStage(stage, for: action) }
+            timings.processingStarted = Date()
+            let result = await processor.process(raw, context: context) { stage in
+                Task { @MainActor in self.showStage(stage, for: mode) }
             }
-            self.timings.processingCompleted = Date()
-            self.lastResult = result.text
+            timings.processingCompleted = Date()
+            guard !result.text.isEmpty else {
+                state = .failed(message: "Nothing to insert after cleanup.", recoverableText: raw)
+                return
+            }
+            lastResult = result.text
 
-            let outcome = await self.injector.insert(result.text, into: target)
-            self.timings.injected = Date()
-            self.log.info("Dictation finished: \(self.timings.summary, privacy: .public)")
+            let outcome: InsertionOutcome
+            if let reason = insertionGuard?(target) {
+                outcome = .copiedToClipboard(reason: reason)
+            } else {
+                outcome = await injector.insert(result.text, into: target)
+            }
+            timings.injected = Date()
+            log.info("\(mode.rawValue, privacy: .public) finished: \(self.timings.summary, privacy: .public)")
 
             var inserted = false
             if case .inserted = outcome { inserted = true }
-            self.onRecord?(DictationRecord(
-                date: Date(), mode: action, language: language, rawTranscript: raw, finalText: result.text,
+            onRecord?(DictationRecord(
+                date: Date(), mode: mode, rawTranscript: raw, finalText: result.text,
                 targetApp: target?.appName, targetBundleID: target?.bundleID, processor: result.processor,
-                inserted: inserted, timings: self.timings
+                promptProfile: mode == .prompt ? resolved.promptProfile : nil,
+                promptPreset: mode == .prompt ? resolved.promptPreset : nil,
+                cleanup: mode == .dictation ? resolved.cleanup : nil,
+                inserted: inserted, notice: result.notice, timings: timings
             ))
             if case .copiedToClipboard(let reason) = outcome {
-                self.state = .failed(message: "\(reason). Text copied — press ⌘V.", recoverableText: result.text)
+                state = .failed(message: reason, recoverableText: result.text)
             } else {
-                self.state = .done(outcome, notice: result.notice)
+                state = .done(mode, outcome, notice: result.notice)
             }
         }
     }

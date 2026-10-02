@@ -1,46 +1,30 @@
 import Foundation
 import os
 
-public enum SmartCleanupMode: String, Codable, CaseIterable, Sendable {
-    case off
-    /// Run the language model only when the transcript needs understanding (self-corrections).
-    case auto
-    case always
-
-    public var displayName: String {
-        switch self {
-        case .off: "Off (rules only)"
-        case .auto: "When needed"
-        case .always: "Always"
-        }
-    }
-}
-
 /// Dictation processing: deterministic cleanup first, an optional local-LLM pass only when the
 /// transcript actually needs it, and strict guards so the model can never change the meaning.
 public struct DictationRefiner: TextProcessor {
     private let log = VoxaraLog.logger("refiner")
     public var cleaner: DeterministicCleaner
     public var provider: (any AIProvider)?
-    public var mode: SmartCleanupMode
     public var timeout: TimeInterval
 
     public init(cleaner: DeterministicCleaner = DeterministicCleaner(), provider: (any AIProvider)? = nil,
-                mode: SmartCleanupMode = .auto, timeout: TimeInterval = 4) {
+                timeout: TimeInterval = 4) {
         self.cleaner = cleaner
         self.provider = provider
-        self.mode = mode
         self.timeout = timeout
     }
 
     public func process(_ raw: String, context: ProcessingContext, onStage: @escaping @Sendable (ProcessingStage) -> Void) async -> ProcessingResult {
+        if context.cleanup == .off { return ProcessingResult(text: raw.trimmingCharacters(in: .whitespacesAndNewlines), processor: "raw") }
         let basic = cleaner.clean(raw)
         guard !basic.isEmpty else { return ProcessingResult(text: "", processor: "rules") }
 
-        let needsModel: Bool = switch mode {
-        case .off: false
-        case .auto: SelfCorrectionDetector.hasCorrection(in: raw)
-        case .always: basic.count > 40
+        let needsModel: Bool = switch context.cleanup {
+        case .off, .light: false
+        case .smart: SelfCorrectionDetector.hasCorrection(in: raw) || basic.count > 400
+        case .thorough: basic.count > 40
         }
         guard needsModel, let provider else { return ProcessingResult(text: basic, processor: "rules") }
 
