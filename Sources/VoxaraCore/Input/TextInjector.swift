@@ -43,7 +43,16 @@ public final class TextInjector {
             NSPasteboard.general.writePlainText(text)
             return .copiedToClipboard(reason: "The focused element is not a text field")
         }
-        if let target { await reactivate(target) }
+        if let target {
+            await reactivate(target)
+            // Never paste into a different app than the one the user was dictating into. Another app can steal
+            // focus while we process; if we cannot get back, keep the text safe on the clipboard instead.
+            if NSWorkspace.shared.frontmostApplication?.processIdentifier != target.pid {
+                log.warning("Could not return to \(target.bundleID ?? "?", privacy: .public); not pasting")
+                NSPasteboard.general.writePlainText(text)
+                return .copiedToClipboard(reason: "Couldn't switch back to \(target.appName ?? "the app") — text copied, press ⌘V")
+            }
+        }
 
         if method == .accessibility, let element = target?.element, insertViaAccessibility(text, element: element) {
             return .inserted(verified: true)
@@ -57,6 +66,7 @@ public final class TextInjector {
         let pasteboard = NSPasteboard.general
         let snapshot = PasteboardSnapshot.capture(pasteboard)
         let before = target?.element.flatMap(Self.characterCount)
+        log.info("Pasting into \(target?.bundleID ?? "?", privacy: .public) role=\(target?.role ?? "none", privacy: .public) verifiable=\(before != nil)")
 
         let ourChange = pasteboard.writeTransientText(text)
         // Let the pasteboard server publish the new contents before the target reads them.
@@ -134,9 +144,9 @@ public final class TextInjector {
     private func reactivate(_ target: InsertionTarget) async {
         guard NSWorkspace.shared.frontmostApplication?.processIdentifier != target.pid,
               let app = NSRunningApplication(processIdentifier: target.pid) else { return }
-        NSApp.yieldActivation(to: app)
+        if target.pid != ProcessInfo.processInfo.processIdentifier { NSApp.yieldActivation(to: app) }
         app.activate()
-        for _ in 0..<20 {
+        for _ in 0..<30 {
             if NSWorkspace.shared.frontmostApplication?.processIdentifier == target.pid { break }
             try? await Task.sleep(for: .milliseconds(15))
         }

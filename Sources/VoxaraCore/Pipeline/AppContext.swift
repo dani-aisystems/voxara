@@ -84,6 +84,14 @@ public struct ResolvedContext: Sendable, Equatable {
     /// Human-readable reason, shown in history and the Applications page.
     public var source: String
 
+    public init(mode: HotkeyAction, promptProfile: String, promptPreset: PromptPreset, cleanup: CleanupLevel, source: String) {
+        self.mode = mode
+        self.promptProfile = promptProfile
+        self.promptPreset = promptPreset
+        self.cleanup = cleanup
+        self.source = source
+    }
+
     public static func resolve(action: HotkeyAction, bundleID: String?, windowTitle: String?,
                                settings: AppSettings, preference: AppPreference?) -> ResolvedContext {
         var result = ResolvedContext(mode: action, promptProfile: settings.promptProfile, promptPreset: settings.promptPreset,

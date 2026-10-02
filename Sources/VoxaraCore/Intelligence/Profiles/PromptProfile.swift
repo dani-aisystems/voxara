@@ -6,6 +6,11 @@ public struct PromptProfile: Codable, Sendable, Equatable, Identifiable {
         /// "colon" → `Requirements:`, "markdown" → `## Requirements`, "xml" → `<requirements>…</requirements>`.
         public var heading: String
         public var numberedWorkflow: Bool
+
+        public init(heading: String, numberedWorkflow: Bool) {
+            self.heading = heading
+            self.numberedWorkflow = numberedWorkflow
+        }
     }
 
     /// A rule that adds a standard line only when the transcript contains one of its trigger phrases.
@@ -29,6 +34,20 @@ public struct PromptProfile: Codable, Sendable, Equatable, Identifiable {
     public var forbidden: [String]
     public var extractorHints: String
 
+    public init(id: String, name: String, version: Int, philosophy: String, style: Style, sectionOrder: [String],
+                labels: [String: [String: String]], signals: [Signal], forbidden: [String], extractorHints: String) {
+        self.id = id
+        self.name = name
+        self.version = version
+        self.philosophy = philosophy
+        self.style = style
+        self.sectionOrder = sectionOrder
+        self.labels = labels
+        self.signals = signals
+        self.forbidden = forbidden
+        self.extractorHints = extractorHints
+    }
+
     public func label(_ section: String, language: String) -> String {
         labels[language]?[section] ?? labels["en"]?[section] ?? section.capitalized
     }
@@ -39,6 +58,13 @@ public struct PresetConfig: Codable, Sendable, Equatable {
     public var signals: Bool
     public var compact: Bool
     public var numberWorkflow: Bool?
+
+    public init(sections: [String], signals: Bool, compact: Bool, numberWorkflow: Bool? = nil) {
+        self.sections = sections
+        self.signals = signals
+        self.compact = compact
+        self.numberWorkflow = numberWorkflow
+    }
 }
 
 struct PresetFile: Codable { var version: Int; var presets: [String: PresetConfig] }
@@ -52,6 +78,11 @@ public enum ProfileError: LocalizedError {
 public struct ProfileStore: Sendable {
     public private(set) var profiles: [String: PromptProfile]
     public private(set) var presets: [PromptPreset: PresetConfig]
+
+    public init(profiles: [String: PromptProfile], presets: [PromptPreset: PresetConfig]) {
+        self.profiles = profiles
+        self.presets = presets
+    }
 
     public static let profileOrder = ["generic", "claude", "chatgpt", "claude-code"]
 

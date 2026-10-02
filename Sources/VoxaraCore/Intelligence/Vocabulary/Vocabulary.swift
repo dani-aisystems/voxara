@@ -84,7 +84,7 @@ public final class VocabularyStore {
         VocabularyEntry(term: "frontend", aliases: ["фронтенд", "фронт енд"]),
         VocabularyEntry(term: "backend", aliases: ["бекенд", "бек енд", "бакенд"]),
         VocabularyEntry(term: "API", aliases: ["епи", "ей пи ай"]),
-        VocabularyEntry(term: "request"),
+        VocabularyEntry(term: "request", aliases: ["реквест", "реквестайт", "рикуест"]),
         VocabularyEntry(term: "deploy", aliases: ["деплой"]),
         VocabularyEntry(term: "Vercel", aliases: ["верцел", "върсел"]),
         VocabularyEntry(term: "Notion", aliases: ["ноушън", "ноушан"]),

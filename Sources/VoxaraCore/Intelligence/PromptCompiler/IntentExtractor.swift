@@ -39,7 +39,7 @@ public struct IntentExtractor: Sendable {
     language to write the items in, and an optional "reader" describes who will read the result. If "fix" is \
     present, it lists problems with your previous attempt; correct them.
 
-    Return JSON matching the schema. Rules:
+    Return JSON matching the schema. Include only fields that have content; omit empty lists and empty strings entirely. Rules:
     - Use ONLY what the speaker said. Do not add technologies, frameworks, names, numbers, sizes, colors, \
     deadlines, audiences, tools or preferences that were not spoken. Leave a list empty when nothing was said.
     - Write each item as a short, concrete imperative or statement using the speaker's own terms. Keep every \
@@ -56,21 +56,21 @@ public struct IntentExtractor: Sendable {
     Example 1
     transcript: "so I want Claude Code to go through my web shop because on phones the checkout page feels cramped, don't start editing right away, look at how the page is put together first, I'm happy with the laptop version so leave that, but on phones the pay button should be easier to find, and afterwards make sure the rest of the shop still works"
     write_in: "same language as transcript"
-    result: {"objective":"Improve the phone version of the web shop's checkout page so the pay button is easier to find.","taskType":"coding","context":["The checkout page feels cramped on phones."],"references":[],"inputs":["The web shop project"],"research":[],"workflow":["Look at how the checkout page is put together before editing anything."],"requirements":["Make the pay button easier to find on phones."],"constraints":[],"exclusions":["Do not change the laptop version (the speaker is happy with it)."],"deliverable":"","validation":["Afterwards, make sure the rest of the shop still works."],"done":[]}
+    result: {"objective":"Improve the phone version of the web shop's checkout page so the pay button is easier to find.","context":["The checkout page feels cramped on phones."],"inputs":["The web shop project"],"workflow":["Look at how the checkout page is put together before editing anything."],"requirements":["Make the pay button easier to find on phones."],"exclusions":["Do not change the laptop version (the speaker is happy with it)."],"validation":["Afterwards, make sure the rest of the shop still works."]}
 
     Example 2
     transcript: "have a look at my newsletter draft, I don't like how it reads next to the Lumen one, Lumen is way more engaging, so figure out why it works and then rewrite mine in that spirit, but obviously not the Lumen topics because mine is about gardening, and find out who Lumen's readers are"
     write_in: "same language as transcript"
-    result: {"objective":"Rewrite the gardening newsletter draft so it is as engaging as the Lumen newsletter.","taskType":"writing","context":["The speaker's newsletter reads worse than the Lumen one."],"references":["Lumen newsletter: use as an engagement reference only, do not reuse its topics."],"inputs":["The current newsletter draft"],"research":["Find out who Lumen's readers are."],"workflow":["First work out why the Lumen newsletter is engaging.","Then rewrite the draft in that spirit."],"requirements":["Keep the newsletter about gardening."],"constraints":[],"exclusions":["Do not reuse the Lumen topics."],"deliverable":"","validation":[],"done":[]}
+    result: {"objective":"Rewrite the gardening newsletter draft so it is as engaging as the Lumen newsletter.","context":["The speaker's newsletter reads worse than the Lumen one."],"references":["Lumen newsletter: use as an engagement reference only, do not reuse its topics."],"inputs":["The current newsletter draft"],"research":["Find out who Lumen's readers are."],"workflow":["First work out why the Lumen newsletter is engaging.","Then rewrite the draft in that spirit."],"requirements":["Keep the newsletter about gardening."],"exclusions":["Do not reuse the Lumen topics."]}
 
     Example 3
     transcript: "Искам първо да провериш защо dashboard страницата зарежда бавно и чак след това да правиш промени, и да не пипаш API-то"
     write_in: "same language as transcript"
-    result: {"objective":"Установи защо dashboard страницата зарежда бавно.","taskType":"debugging","context":["Dashboard страницата зарежда бавно."],"references":[],"inputs":[],"research":[],"workflow":["Първо провери причината за бавното зареждане.","Чак след това правѝ промени."],"requirements":[],"constraints":[],"exclusions":["Не променяй API-то."],"deliverable":"","validation":[],"done":[]}
+    result: {"objective":"Установи защо dashboard страницата зарежда бавно.","context":["Dashboard страницата зарежда бавно."],"workflow":["Първо провери причината за бавното зареждане.","Чак след това правѝ промени."],"exclusions":["Не променяй API-то."]}
 
     Example 4
     transcript: "write me a short email to Anna saying the Thursday meeting moves to Friday"
     write_in: "same language as transcript"
-    result: {"objective":"Write a short email to Anna saying the Thursday meeting moves to Friday.","taskType":"writing","context":[],"references":[],"inputs":[],"research":[],"workflow":[],"requirements":["Keep the email short."],"constraints":[],"exclusions":[],"deliverable":"A short email to Anna.","validation":[],"done":[]}
+    result: {"objective":"Write a short email to Anna saying the Thursday meeting moves to Friday.","requirements":["Keep the email short."],"deliverable":"A short email to Anna."}
     """
 }

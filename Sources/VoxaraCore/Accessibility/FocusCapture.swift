@@ -9,6 +9,8 @@ public struct InsertionTarget: @unchecked Sendable {
     /// Focused accessibility element, if the app exposes one.
     public let element: AXUIElement?
     public let role: String?
+    /// Focused window title. Only read for browsers, where it identifies AI chat sites.
+    public let windowTitle: String?
 
     /// Roles that definitely cannot accept typed text.
     static let nonTextRoles: Set<String> = [
@@ -19,6 +21,15 @@ public struct InsertionTarget: @unchecked Sendable {
 
     /// False only when we positively know the focus is not a text input. Web views and
     /// Electron apps often report generic roles (AXGroup, AXWebArea), so unknown counts as editable.
+    /// Roles that are definitely text inputs.
+    static let textRoles: Set<String> = ["AXTextField", "AXTextArea", "AXComboBox", "AXSearchField", "AXWebArea"]
+
+    /// True when the focused element is positively a text input (not merely 'unknown').
+    public var isKnownTextInput: Bool {
+        guard let role else { return false }
+        return Self.textRoles.contains(role) && role != "AXWebArea"
+    }
+
     public var mayAcceptText: Bool {
         guard let role else { return true }
         return !Self.nonTextRoles.contains(role)
@@ -26,24 +37,58 @@ public struct InsertionTarget: @unchecked Sendable {
 }
 
 public enum FocusCapture {
+    /// Processes already switched into "expose full accessibility tree" mode.
+    nonisolated(unsafe) private static var enhanced = Set<pid_t>()
+    private static let lock = NSLock()
+
     public static func current() -> InsertionTarget? {
         guard let app = NSWorkspace.shared.frontmostApplication else { return nil }
-        let system = AXUIElementCreateSystemWide()
-        AXUIElementSetMessagingTimeout(system, 0.25)
+        let pid = app.processIdentifier
+        let appElement = AXUIElementCreateApplication(pid)
+        AXUIElementSetMessagingTimeout(appElement, 0.25)
+
+        // Chromium and Electron apps (browsers, ChatGPT, Claude, Notion, VS Code…) expose their text fields to
+        // Accessibility only when asked. Asking makes the focused field, its role and its value visible, so
+        // Voxara can insert reliably and confirm the result.
+        if AppTraits.isWebBased(pid: pid, bundleID: app.bundleIdentifier) { enableFullAccessibility(appElement, pid: pid) }
 
         var focused: CFTypeRef?
         var element: AXUIElement?
-        if AXUIElementCopyAttributeValue(system, kAXFocusedUIElementAttribute as CFString, &focused) == .success,
+        if AXUIElementCopyAttributeValue(appElement, kAXFocusedUIElementAttribute as CFString, &focused) == .success,
            let focused, CFGetTypeID(focused) == AXUIElementGetTypeID() {
             element = (focused as! AXUIElement)
+        } else {
+            let system = AXUIElementCreateSystemWide()
+            AXUIElementSetMessagingTimeout(system, 0.25)
+            if AXUIElementCopyAttributeValue(system, kAXFocusedUIElementAttribute as CFString, &focused) == .success,
+               let focused, CFGetTypeID(focused) == AXUIElementGetTypeID() {
+                element = (focused as! AXUIElement)
+            }
+        }
+
+        var title: String?
+        if let bundleID = app.bundleIdentifier, AppCatalog.browsers.contains(bundleID) {
+            var window: CFTypeRef?
+            if AXUIElementCopyAttributeValue(appElement, kAXFocusedWindowAttribute as CFString, &window) == .success,
+               let window, CFGetTypeID(window) == AXUIElementGetTypeID() {
+                title = AX.string(window as! AXUIElement, kAXTitleAttribute)
+            }
         }
         return InsertionTarget(
-            pid: app.processIdentifier,
+            pid: pid,
             bundleID: app.bundleIdentifier,
             appName: app.localizedName,
             element: element,
-            role: element.flatMap { AX.string($0, kAXRoleAttribute) }
+            role: element.flatMap { AX.string($0, kAXRoleAttribute) },
+            windowTitle: title
         )
+    }
+
+    private static func enableFullAccessibility(_ appElement: AXUIElement, pid: pid_t) {
+        let alreadyEnabled = lock.withLock { !enhanced.insert(pid).inserted }
+        guard !alreadyEnabled else { return }
+        AXUIElementSetAttributeValue(appElement, "AXManualAccessibility" as CFString, kCFBooleanTrue)
+        AXUIElementSetAttributeValue(appElement, "AXEnhancedUserInterface" as CFString, kCFBooleanTrue)
     }
 }
 

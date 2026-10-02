@@ -96,7 +96,6 @@ public struct IntentSpec: Codable, Sendable, Equatable {
             "type": "object",
             "properties": [
                 "objective": ["type": "string", "description": "One sentence: the main thing the speaker wants done."],
-                "taskType": ["type": "string", "enum": ["coding", "debugging", "research", "writing", "business", "planning", "design", "analysis", "other"]],
                 "context": list("Background facts the speaker gave."),
                 "references": list("Existing things to look at or use as a model, with how they should be used."),
                 "inputs": list("Material, files, projects or data the work applies to."),
@@ -109,7 +108,7 @@ public struct IntentSpec: Codable, Sendable, Equatable {
                 "validation": list("How the speaker wants the result checked."),
                 "done": list("Completion criteria the speaker stated."),
             ],
-            "required": ["objective", "taskType"],
+            "required": ["objective"],
         ]
     }
 }
