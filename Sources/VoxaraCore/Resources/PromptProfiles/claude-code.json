@@ -205,6 +205,12 @@
       "presets": [
         "structured",
         "deep"
+      ],
+      "skipIfSpecMentions": [
+        "summary",
+        "summariz",
+        "summaris",
+        "обобщ"
       ]
     },
     {

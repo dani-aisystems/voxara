@@ -67,6 +67,10 @@ public struct PromptRenderer: Sendable {
             guard signal.triggers.contains(where: { lower.contains($0.lowercased()) }) else { continue }
             guard let text = signal.text[language] ?? signal.text["en"] else { continue }
             var items = spec[signal.section]
+            if let stems = signal.skipIfSpecMentions {
+                let everything = (IntentSpec.sections.flatMap { spec[$0] } + [spec.objective]).joined(separator: " ").lowercased()
+                if stems.contains(where: { everything.contains($0.lowercased()) }) { continue }
+            }
             // Skip when the extracted spec already says essentially the same thing.
             if items.contains(where: { Self.overlap($0, text) >= 0.6 }) { continue }
             // Signal lines come first within their section: they frame the speaker's own items.

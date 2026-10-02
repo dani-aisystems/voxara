@@ -338,3 +338,46 @@ private extension MockProvider {
         #expect(f.evaluate("Fix the hero on mobile with React.\nValidation").invented.isEmpty)
     }
 }
+
+@Suite struct SignalSkipTests {
+    @Test func summarySignalIsSkippedWhenTheSpeakerAlreadyAskedForOne() throws {
+        let store = try ProfileStore.load(userDirectory: nil)
+        let spec = IntentSpec(objective: "Fix the bug.", workflow: ["Write a short summary of what changed."])
+        let out = PromptRenderer().render(spec: spec, profile: store.profile("claude-code"), preset: .structured,
+                                          presetConfig: store.preset(.structured), transcript: "fix the bug and write a summary", language: "en")
+        #expect(!out.contains("Finish with a concise summary"))
+        #expect(out.contains("Write a short summary of what changed."))
+    }
+
+    @Test func summarySignalStillFiresWhenNothingCoversIt() throws {
+        let store = try ProfileStore.load(userDirectory: nil)
+        let out = PromptRenderer().render(spec: IntentSpec(objective: "Fix the bug."), profile: store.profile("claude-code"), preset: .structured,
+                                          presetConfig: store.preset(.structured), transcript: "fix the bug and report back what you found", language: "en")
+        #expect(out.contains("Finish with a concise summary"))
+    }
+}
+
+@Suite struct CoverageBackstopRegressionTests {
+    private let transcript = "Make the new deck follow those principles but obviously don't copy the business info because it's different and research Citizens Club."
+
+    @Test func aDroppedSubClauseInsideALongSentenceIsCaught() {
+        let prompt = "Make the new deck follow those design principles.\n\n<context>\n- Citizens Club looks worse.\n</context>"
+        let missing = CoverageBackstop.missingClauses(transcript: transcript, prompt: prompt)
+        #expect(missing.contains { $0.lowercased().contains("copy the business info") })
+    }
+
+    @Test func sectionLabelsAndTagsDoNotCountAsSpokenWords() {
+        // "research" appears only as a tag name here, so the spoken "research Citizens Club" is still missing.
+        let prompt = "Improve the deck.\n\n<research>\n- Separate facts from assumptions.\n</research>\n\nContext:\n- The Citizens Club deck."
+        let missing = CoverageBackstop.missingClauses(transcript: "Improve the deck and research Citizens Club pricing history.", prompt: prompt)
+        #expect(missing.contains { $0.lowercased().contains("research") })
+    }
+
+    @Test func strippingKeepsRealContent() {
+        let stripped = CoverageBackstop.stripScaffolding("<approach>\n1. Inspect the dashboard code.\n</approach>\n\nValidation:\n- Run the tests.")
+        #expect(stripped.contains("Inspect the dashboard code"))
+        #expect(stripped.contains("Run the tests"))
+        #expect(!stripped.contains("approach"))
+        #expect(!stripped.contains("Validation"))
+    }
+}

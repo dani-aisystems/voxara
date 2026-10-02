@@ -21,6 +21,8 @@ public struct PromptProfile: Codable, Sendable, Equatable, Identifiable {
         public var section: String
         public var text: [String: String]
         public var presets: [String]
+        /// If any of these stems already appears in the extracted spec, the idea is covered and the line is not added.
+        public var skipIfSpecMentions: [String]?
     }
 
     public var id: String

@@ -6,7 +6,7 @@ import Foundation
 public enum CoverageBackstop {
     /// Everyday words that carry no task content, so a clause made only of them can be ignored.
     static let fluff: Set<String> = [
-        "okay", "basically", "honestly", "actually", "really", "just", "thing", "things", "bit", "long", "want", "wants",
+        "okay", "done", "finished", "finish", "youre", "you're", "basically", "obviously", "definitely", "certainly", "literally", "honestly", "actually", "really", "just", "thing", "things", "bit", "long", "want", "wants",
         "need", "needs", "like", "would", "could", "please", "think", "maybe", "probably", "kind", "sort", "something",
         "anything", "everything", "stuff", "some", "very", "much", "make", "sure", "what", "when", "where", "does",
         "have", "know", "going", "doing", "good", "better", "right", "fine", "tell", "give", "take", "look", "looks",
@@ -16,7 +16,7 @@ public enum CoverageBackstop {
     ]
 
     public static func missingClauses(transcript: String, prompt: String) -> [String] {
-        let promptWords = TextScript.words(prompt)
+        let promptWords = TextScript.words(stripScaffolding(prompt))
         var missing: [String] = []
         for clause in clauses(in: transcript) {
             let content = TextScript.words(clause).filter {
@@ -24,15 +24,32 @@ public enum CoverageBackstop {
             }
             guard content.count >= 2 else { continue }
             let hits = content.filter { word in promptWords.contains { GroundingChecker.sameWord($0, word) } }.count
-            if Double(hits) / Double(content.count) < 0.34 { missing.append(tidy(clause)) }
+            if Double(hits) / Double(content.count) < 0.5 { missing.append(tidy(clause)) }
         }
         return missing
     }
 
+    /// Removes what the prompt adds itself (XML tags, section labels, markdown headings) so those words are not
+    /// mistaken for words the speaker said.
+    static func stripScaffolding(_ prompt: String) -> String {
+        var s = prompt.replacingOccurrences(of: "</?[A-Za-z_]+>", with: " ", options: .regularExpression)
+        s = s.replacingOccurrences(of: "(?m)^\\s*#+\\s+.*$", with: " ", options: .regularExpression)
+        s = s.replacingOccurrences(of: "(?m)^[^\\n.]{1,40}:\\s*$", with: " ", options: .regularExpression)
+        return s
+    }
+
     static func clauses(in text: String) -> [String] {
-        let pattern = "(?:[.!?;]+\\s+|,\\s*(?:and|but|so|then|also|because|while|и|но|а|че|защото|после)?\\s+|\\s+(?:and then|but then)\\s+)"
+        // Sentence ends, commas, and clause-level conjunctions. Splitting at "but" / "because" matters: one long spoken
+        // sentence often carries several separate instructions, and a few matching words must not hide a dropped one.
+        let pattern = "(?:[.!?;]+\\s+|,\\s*(?:and|but|so|then|also|because|while|и|но|а|че|защото|после)?\\s+|\\s+(?:and then|but then|but|because|so that|although|however|но|защото|и после)\\s+)"
         let marked = text.replacingOccurrences(of: pattern, with: "\u{1F}", options: [.regularExpression, .caseInsensitive])
-        return marked.split(separator: "\u{1F}").map { String($0).trimmingCharacters(in: .whitespacesAndNewlines) }.filter { !$0.isEmpty }
+        let first = marked.split(separator: "\u{1F}").map { String($0).trimmingCharacters(in: .whitespacesAndNewlines) }.filter { !$0.isEmpty }
+        // Long clauses often chain separate instructions with "and"; judge those parts separately.
+        return first.flatMap { clause -> [String] in
+            guard clause.split(whereSeparator: \.isWhitespace).count > 6 else { return [clause] }
+            return clause.replacingOccurrences(of: "\\s+(?:and|и)\\s+", with: "\u{1F}", options: [.regularExpression, .caseInsensitive])
+                .split(separator: "\u{1F}").map { String($0).trimmingCharacters(in: .whitespacesAndNewlines) }.filter { !$0.isEmpty }
+        }
     }
 
     static func tidy(_ clause: String) -> String {
