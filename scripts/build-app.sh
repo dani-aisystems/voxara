@@ -94,4 +94,6 @@ if [[ $INSTALL == 1 ]]; then
   rm -rf "$DEST"
   cp -R "$APP" "$DEST"
   echo "Installed to $DEST"
+  # The staging copy would show up as a second "Voxara" in Spotlight and Launchpad; the installed one is the real app.
+  rm -rf "$APP"
 fi
