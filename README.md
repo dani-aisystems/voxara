@@ -8,6 +8,19 @@ A local-first voice interface for macOS. Hold a key, speak, release: your words 
 English is primary, Bulgarian is first-class, and English technical terms inside Bulgarian speech are kept.
 Speech recognition, cleanup and prompt building all run on this Mac. No account, no cloud, no audio saved.
 
+## Product tour
+
+<p align="center">
+  <img src="docs/screenshots/overview.png" alt="Voxara Command Center overview with local model and shortcut status" width="720">
+</p>
+
+<p align="center">
+  <img src="docs/screenshots/history.png" alt="Voxara local dictation and prompt history" width="49%">
+  <img src="docs/screenshots/onboarding.png" alt="Voxara first-launch onboarding" width="49%">
+</p>
+
+The app's built-in snapshot mode rendered these screens with sample data in an isolated temporary support directory; it did not read real history or settings.
+
 ## Run it
 
 ```sh
